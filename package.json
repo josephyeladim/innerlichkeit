@@ -2,8 +2,10 @@
   "name": "innerlichkeit",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'static'"
+    "build": "echo 'Building INNERLICHKEIT...'",
+    "dev": "vercel dev"
   },
-  "dependencies": {}
+  "engines": {
+    "node": "18.x"
+  }
 }
