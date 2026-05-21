@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INNERLICHKEIT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+:root {
+  --deep:#0a0a0f; --void:#12111a; --panel:#16151f;
+  --ember:#c8956c; --flame:#e8a87c; --gold:#d4a853;
+  --ash:#8a8090; --mist:#5a5468; --light:#f0ece4;
+  --white:#faf8f4; --border:rgba(200,149,108,0.15);
+  --soft:rgba(200,149,108,0.07);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--deep);color:var(--light);font-family:'Cormorant Garamond',Georgia,serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── HEADER ── */
+header{
+  background:var(--void);border-bottom:1px solid var(--border);
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;gap:8px;
+}@media(min-width:481px){header{padding:14px 32px}}
+.logo{font-family:'IM Fell English',serif;font-size:1.3rem;letter-spacing:.12em;color:var(--white)}
+.logo span{font-size:.7rem;color:var(--ember);font-family:'Cormorant Garamond',serif;letter-spacing:.22em;display:block;margin-top:1px;font-style:italic}
+.header-right{display:flex;align-items:center;gap:12px}
+.context-pills{display:flex;gap:8px}
+.pill{background:rgba(200,149,108,.08);border:1px solid var(--border);color:var(--ash);padding:4px 10px;font-size:.72rem;letter-spacing:.1em;font-style:italic;transition:all .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px}@media(min-width:481px){.pill{max-width:none;letter-spacing:.15em;padding:4px 12px}}
+.pill.active{color:var(--ember);border-color:var(--ember)}
+.hab-toggle{background:none;border:1px solid var(--border);color:var(--ash);padding:6px 10px;font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.1em;cursor:pointer;transition:all .3s;font-style:italic;white-space:nowrap}@media(min-width:481px){.hab-toggle{padding:6px 16px;letter-spacing:.2em}}
+.hab-toggle:hover{border-color:var(--ember);color:var(--ember)}
+
+/* ── SETUP SCREEN ── */
+#setup{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:28px 20px 32px;text-align:center;gap:22px;overflow-y:auto;
+}
+.setup-brand{
+  display:flex;flex-direction:column;align-items:center;gap:16px;
+}
+.candle-wrap{position:relative;margin-bottom:8px}
+.flame-el{width:12px;height:28px;background:linear-gradient(to top,var(--gold),var(--flame),rgba(255,245,210,.9));border-radius:50% 50% 30% 30%;margin:0 auto;box-shadow:0 0 14px rgba(212,168,83,.5),0 0 40px rgba(212,168,83,.12);animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:scaleY(1) scaleX(1)}33%{transform:scaleY(1.04) scaleX(.97)}66%{transform:scaleY(.98) scaleX(1.02)}}
+.candle-body{width:13px;height:44px;background:linear-gradient(to right,#e0d8c8,#f5f0e8,#d8d0c0);margin:0 auto;border-radius:2px 2px 3px 3px}
+.setup-brand h1{font-family:'IM Fell English',serif;font-size:clamp(1.8rem,8vw,4.5rem);font-weight:400;letter-spacing:.15em;color:var(--white);line-height:1}
+.setup-brand p{font-size:.85rem;color:var(--ash);letter-spacing:.25em;font-style:italic}
+
+.setup-form{display:flex;flex-direction:column;align-items:center;gap:24px;width:100%;max-width:560px}
+.setup-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.setup-label{font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ember);opacity:.7;margin-bottom:4px;text-align:center}
+.sel-btn{background:none;border:1px solid var(--soft);color:var(--ash);padding:8px 20px;font-family:'Cormorant Garamond',serif;font-size:.9rem;cursor:pointer;transition:all .3s;letter-spacing:.08em}
+.sel-btn:hover{border-color:var(--border);color:var(--light)}
+.sel-btn.on{border-color:var(--ember);color:var(--ember);background:rgba(200,149,108,.07)}
+.area-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;width:100%}@media(max-width:480px){.area-grid{grid-template-columns:1fr 1fr}}
+.start-btn{background:rgba(200,149,108,.1);border:1px solid var(--ember);color:var(--ember);padding:13px 48px;font-family:'IM Fell English',serif;font-size:1rem;letter-spacing:.18em;cursor:pointer;transition:all .4s;opacity:.4;pointer-events:none}
+.start-btn.ready{opacity:1;pointer-events:auto}
+.start-btn.ready:hover{background:rgba(200,149,108,.2)}@media(max-width:480px){.start-btn{width:100%;max-width:none;padding:14px}}
+
+/* ── CHAT SCREEN ── */
+#chat{flex:1;display:none;flex-direction:column;overflow:hidden}
+.messages{flex:1;overflow-y:auto;padding:24px 18px;display:flex;flex-direction:column;gap:20px;scrollbar-width:thin;scrollbar-color:var(--soft) transparent}@media(min-width:481px){.messages{padding:32px 40px;gap:24px}}
+@media(max-width:600px){.messages{padding:20px 18px}}
+
+/* Bienvenida */
+.welcome-chat{display:flex;flex-direction:column;gap:8px;max-width:680px;border-left:1px solid var(--ember);padding-left:24px}
+.welcome-chat .wlabel{font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ember);opacity:.6;margin-bottom:6px}
+.welcome-chat p{color:var(--light);font-size:1rem;line-height:1.85}
+.welcome-chat .context-line{font-size:.78rem;color:var(--ash);font-style:italic;margin-top:8px}
+
+/* Mensajes */
+.msg-user{align-self:flex-end;max-width:640px;background:rgba(200,149,108,.05);border:1px solid var(--border);padding:16px 22px}
+.msg-user p{color:var(--light);font-size:.95rem;line-height:1.7;font-style:italic}
+.msg-assistant{align-self:flex-start;max-width:720px;border-left:1px solid var(--ember);padding-left:24px}
+.msg-label{font-size:.67rem;letter-spacing:.3em;text-transform:uppercase;opacity:.5;margin-bottom:10px}
+.msg-user .msg-label{color:var(--ember);text-align:right}
+.msg-assistant .msg-label{color:var(--ember)}
+.msg-content{color:var(--light);font-size:.98rem;line-height:1.88}
+.msg-content h3{font-family:'IM Fell English',serif;font-size:1.08rem;color:var(--white);margin:16px 0 8px;font-weight:400}
+.msg-content em{color:var(--flame);font-style:italic}
+.msg-content strong{color:var(--white)}
+.msg-content p{margin-bottom:10px}
+
+/* Loading */
+.loading{align-self:flex-start;display:flex;align-items:center;gap:10px;color:var(--ash);font-style:italic;font-size:.88rem;padding:12px 0 12px 26px;border-left:1px solid rgba(200,149,108,.3)}
+.dots span{display:inline-block;width:4px;height:4px;background:var(--ember);border-radius:50%;animation:dp 1.4s ease-in-out infinite;margin-right:3px}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* Input area */
+.input-area{flex-shrink:0;background:var(--void);border-top:1px solid var(--border);padding:14px 16px;display:flex;gap:10px;align-items:flex-end}@media(min-width:481px){.input-area{padding:16px 32px}}
+.input-wrap{flex:1;position:relative}
+textarea#msg-input{
+  width:100%;background:var(--panel);border:1px solid var(--soft);
+  color:var(--light);padding:13px 16px;font-family:'Cormorant Garamond',serif;
+  font-size:1rem;resize:none;outline:none;line-height:1.6;min-height:52px;
+  max-height:160px;overflow-y:auto;transition:border-color .3s;
+}
+textarea#msg-input:focus{border-color:var(--border)}
+textarea#msg-input::placeholder{color:var(--mist);font-style:italic}
+.send-btn{background:rgba(200,149,108,.1);border:1px solid var(--ember);color:var(--ember);padding:13px 24px;font-family:'IM Fell English',serif;font-size:.9rem;letter-spacing:.12em;cursor:pointer;transition:all .3s;flex-shrink:0;height:52px}
+.send-btn:hover{background:rgba(200,149,108,.2)}
+.send-btn:disabled{opacity:.3;cursor:not-allowed}
+.input-hint{font-size:.68rem;color:var(--mist);letter-spacing:.1em;margin-top:6px;font-style:italic}
+
+/* ── HABITÁCULO OVERLAY ── */
+#hab-overlay{
+  position:fixed;inset:0;background:rgba(8,8,12,.97);
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:80px 24px 40px;
+  z-index:100;overflow-y:auto;
+}
+#hab-overlay.open{display:flex}
+.hab-bg{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(212,168,83,.05) 0%,transparent 65%);animation:hbr 10s ease-in-out infinite;pointer-events:none}
+@keyframes hbr{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
+.hab-close{position:absolute;top:24px;right:32px;background:none;border:none;color:var(--ash);font-size:1.2rem;cursor:pointer;letter-spacing:.2em;font-family:'Cormorant Garamond',serif;transition:color .3s}
+.hab-close:hover{color:var(--ember)}
+.hab-ciclo-sel{display:flex;gap:10px;margin-bottom:40px;position:relative;z-index:1}
+.hcb{background:none;border:1px solid var(--soft);color:var(--ash);padding:6px 18px;font-family:'Cormorant Garamond',serif;font-size:.8rem;letter-spacing:.15em;cursor:pointer;transition:all .3s}
+.hcb:hover,.hcb.on{border-color:var(--ember);color:var(--ember);background:rgba(200,149,108,.06)}
+.h-candle{position:relative;z-index:1;margin-bottom:44px}
+.h-flame{width:14px;height:32px;background:linear-gradient(to top,var(--gold),var(--flame),rgba(255,245,210,.9));border-radius:50% 50% 30% 30%;margin:0 auto;box-shadow:0 0 16px rgba(212,168,83,.5),0 0 50px rgba(212,168,83,.12);animation:fl 3s ease-in-out infinite}
+.h-cbody{width:16px;height:52px;background:linear-gradient(to right,#e0d8c8,#f5f0e8,#d8d0c0);margin:0 auto;border-radius:2px 2px 4px 4px}
+.h-quote{position:relative;z-index:1;max-width:520px;font-size:1.05rem;color:var(--light);font-style:italic;line-height:1.9;margin-bottom:14px;transition:opacity .7s}
+.h-source{font-size:.74rem;color:var(--ash);letter-spacing:.2em;margin-bottom:10px;position:relative;z-index:1}
+.h-music{font-size:.76rem;color:var(--mist);letter-spacing:.14em;font-style:italic;position:relative;z-index:1;margin-bottom:6px}
+.h-painter{font-size:.7rem;color:var(--ember);letter-spacing:.14em;font-style:italic;position:relative;z-index:1;opacity:.7;margin-bottom:40px}
+.hab-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;position:relative;z-index:1}
+.hact{background:none;border:1px solid var(--border);color:var(--ash);padding:10px 26px;font-family:'Cormorant Garamond',serif;font-size:.85rem;letter-spacing:.18em;cursor:pointer;transition:all .4s}
+.hact:hover{border-color:var(--ember);color:var(--ember)}
+.hact.primary{background:rgba(200,149,108,.08);border-color:var(--ember);color:var(--ember)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-thumb{background:var(--soft);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">INNERLICHKEIT<span>Pedagogía fundada en la interioridad</span></div>
+  <div class="header-right">
+    <div class="context-pills" id="context-pills" style="display:none">
+      <div class="pill" id="pill-ciclo"></div>
+      <div class="pill" id="pill-area"></div>
+    </div>
+    <button class="hab-toggle" onclick="toggleHab()">Habitáculo del Silencio</button>
+  </div>
+</header>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="setup-brand">
+    <div class="candle-wrap">
+      <div class="flame-el"></div>
+      <div class="candle-body"></div>
+    </div>
+    <h1>INNERLICHKEIT</h1>
+    <p>El alma no tiene wi-fi.</p>
+  </div>
+
+  <div class="setup-form">
+    <div>
+      <p class="setup-label">¿Con qué ciclo trabajas hoy?</p>
+      <div class="setup-row" id="ciclo-sel">
+        <button class="sel-btn" onclick="pickCiclo(this,'I')">Ciclo I</button>
+        <button class="sel-btn" onclick="pickCiclo(this,'II')">Ciclo II</button>
+        <button class="sel-btn" onclick="pickCiclo(this,'III')">Ciclo III</button>
+      </div>
+    </div>
+
+    <div id="area-section" style="display:none;width:100%">
+      <p class="setup-label">¿En qué área?</p>
+      <div class="area-grid" id="area-sel"></div>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startChat()">Entrar</button>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="chat">
+  <div class="messages" id="messages"></div>
+  <div class="input-area">
+    <div class="input-wrap">
+      <textarea id="msg-input" rows="1" placeholder="Escribe tu pregunta o inquietud pedagógica..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <p class="input-hint">Ctrl + Enter para enviar</p>
+    </div>
+    <button class="send-btn" id="send-btn" onclick="sendMessage()">Enviar</button>
+  </div>
+</div>
+
+<!-- HABITÁCULO OVERLAY -->
+<div id="hab-overlay">
+  <div class="hab-bg"></div>
+  <button class="hab-close" onclick="toggleHab()">✕ cerrar</button>
+
+  <div class="hab-ciclo-sel" id="hab-ciclo-sel">
+    <button class="hcb on" onclick="setHabCiclo(this,'I')">Ciclo I</button>
+    <button class="hcb" onclick="setHabCiclo(this,'II')">Ciclo II</button>
+    <button class="hcb" onclick="setHabCiclo(this,'III')">Ciclo III</button>
+  </div>
+
+  <div class="h-candle"><div class="h-flame"></div><div class="h-cbody"></div></div>
+  <p class="h-quote" id="hq"></p>
+  <p class="h-source" id="hs"></p>
+  <p class="h-music" id="hm"></p>
+  <p class="h-painter" id="hp"></p>
+
+  <div class="hab-actions">
+    <button class="hact primary" onclick="nextHabQuote()">Siguiente fragmento</button>
+    <button class="hact" id="gen-consigna-btn" onclick="genConsigna()">Generar consigna desde el silencio</button>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────
+const S = { ciclo:null, area:null, messages:[], habCiclo:'I', habIdx:0 };
+
+// ─── ÁREAS MEP ────────────────────────────────────────
+const AREAS = {
+  I:['Español','Matemáticas','Ciencias','Estudios Sociales','Inglés','Artes Plásticas','Música','Educación Física','Religión'],
+  II:['Español','Matemáticas','Ciencias','Estudios Sociales','Inglés','Artes Plásticas','Música','Educación Física','Religión'],
+  III:['Español','Matemáticas','Ciencias','Estudios Sociales','Inglés','Artes Plásticas','Música','Educación Física','Religión','Orientación']
+};
+
+// ─── HABITÁCULO CORPUS ────────────────────────────────
+const HAB = {
+  I:[
+    {q:'"La música es lo que nos hace sentir al escucharla,\ncomo el llanto o la sonrisa de un bebé."',s:'Joseph Yeladim, Papá, amar y crear',m:'♩ Vivaldi — Il Gardellino',p:'Paul Klee · Fish Magic (1925)'},
+    {q:'"Hay un mundo interior acá adentro."',s:'Joseph Yeladim, Papá, amar y crear',m:'♩ Mozart — Sonata para piano K.545',p:'Joan Miró · Constelaciones'},
+    {q:'"La contemplación pura consiste en recibir."',s:'Joseph Yeladim, Papá, amar y crear',m:'♩ Vivaldi — Las cuatro estaciones, Primavera',p:'Paul Klee · Sinfonía (1932)'},
+    {q:'"Susurrar oraciones de santos a los niños\nabre las ventanas a la belleza."',s:'Joseph Yeladim, Papá, amar y crear',m:'♩ Bach — Jesús, alegría de los hombres, BWV 147',p:'Yayoi Kusama · Dots Obsession'},
+    {q:'"El primer muñeco que buscan los padres\nes fundamental para la vida interior del bebé."',s:'Joseph Yeladim, Papá, amar y crear',m:'♩ Brahms — Wiegenlied',p:'Claude Monet · Nenúfares'},
+  ],
+  II:[
+    {q:'"El alma tiene un centro donde nada del mundo exterior\npuede entrar sin ser transformado por lo que allí habita."',s:'Edith Stein, Ser finito y ser eterno',m:'♩ Beethoven — Sinfonía n.º 6, segundo movimiento',p:'Claude Monet · La catedral de Rouen'},
+    {q:'"El color es un medio para ejercer influencia directa sobre el alma.\nEl color es la tela, el ojo el macillo, y el alma es el piano con sus cuerdas."',s:'Vasily Kandinsky — citado en Papá, amar y crear',m:'♩ Bach — Preludio en Do Mayor, BWV 846',p:'Vasily Kandinsky · Composición VIII'},
+    {q:'"La singularidad de la persona\nno es un añadido al ser: es su forma más interior."',s:'Edith Stein, La estructura de la persona humana',m:'♩ Brahms — Intermezzo Op.118 n.º 2',p:'Joan Miró · El carnaval del arlequín'},
+    {q:'"La poesía no es de quien la escribe,\nsino de quien la necesita."',s:'Joseph Yeladim, Papá, amar y crear',m:'♩ Bach — Suite n.º 1 para chelo',p:'Paul Klee · Ad Parnassum (1932)'},
+    {q:'"No, no tienes tiempo de tratar con Dios\nnegocios de poca importancia."',s:'Teresa de Jesús — citada en Papá, amar y crear',m:'♩ Vivaldi — Stabat Mater',p:'Friedensreich Hundertwasser · La espiral'},
+  ],
+  III:[
+    {q:'"¡Oh llama de amor viva\nque tiernamente hieres\nde mi alma en el más profundo centro!"',s:'Juan de la Cruz, Llama de amor viva',m:'♩ Bach — Aria, Suite n.º 3 en Re',p:'Vasily Kandinsky · Amarillo, rojo, azul'},
+    {q:'"Tú más cercano a mí que yo misma\ny más íntimo que mi intimidad."',s:'Edith Stein, Novena de Pentecostés',m:'♩ Brahms — Sinfonía n.º 4, tercer movimiento',p:'Yayoi Kusama · Infinity Mirror Room'},
+    {q:'"María del Karmel, tu llegada no es fin,\nsino conjunción eterna,\ndonde el vientre-templo se abre al mundo como arca liberada."',s:'Joseph Yeladim, María del Karmel',m:'♩ Arvo Pärt — Für Alina',p:'Claude Monet · El estanque de los nenúfares'},
+    {q:'"Recójase el alma en sí misma\ny todo lo demás cese."',s:'Teresa de Jesús, Camino de perfección',m:'♩ Bach — Cantata BWV 82, Ich habe genug',p:'Friedensreich Hundertwasser · Ventana a otra realidad'},
+    {q:'"¿Adónde te escondiste, Amado,\ny me dejaste con gemido?"',s:'Juan de la Cruz, Cántico espiritual',m:'♩ Hugo Wolf — Anakreons Grab',p:'Joan Miró · La escalera del escape'},
+  ]
+};
+
+// ─── SETUP ────────────────────────────────────────────
+function pickCiclo(btn, ciclo) {
+  document.querySelectorAll('#ciclo-sel .sel-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  S.ciclo = ciclo;
+  const areaSection = document.getElementById('area-section');
+  const areaGrid = document.getElementById('area-sel');
+  areaGrid.innerHTML = '';
+  AREAS[ciclo].forEach(a => {
+    const b = document.createElement('button');
+    b.className = 'sel-btn';
+    b.textContent = a;
+    b.onclick = () => {
+      areaGrid.querySelectorAll('.sel-btn').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      S.area = a;
+      checkReady();
+    };
+    areaGrid.appendChild(b);
+  });
+  areaSection.style.display = 'block';
+  S.area = null;
+  checkReady();
+}
+
+function checkReady() {
+  const btn = document.getElementById('start-btn');
+  if (S.ciclo && S.area) btn.classList.add('ready');
+  else btn.classList.remove('ready');
+}
+
+function startChat() {
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('chat').style.display = 'flex';
+  document.getElementById('context-pills').style.display = 'flex';
+  document.getElementById('pill-ciclo').textContent = 'Ciclo ' + S.ciclo;
+  document.getElementById('pill-ciclo').classList.add('active');
+  document.getElementById('pill-area').textContent = S.area;
+  document.getElementById('pill-area').classList.add('active');
+  // Sync habitáculo al ciclo elegido
+  S.habCiclo = S.ciclo;
+  document.querySelectorAll('.hcb').forEach(b => {
+    b.classList.toggle('on', b.textContent.includes(S.ciclo));
+  });
+  setHabQuote();
+  // Mensaje de bienvenida
+  addWelcome();
+  document.getElementById('msg-input').focus();
+}
+
+function addWelcome() {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'welcome-chat';
+  div.innerHTML = `
+    <p class="wlabel">Asistente · INNERLICHKEIT</p>
+    <p>El asistente está listo para acompañarte. Escribe con libertad: una pregunta sobre tu grupo, una dificultad pedagógica, una intención que quieres llevar al aula. Todo lo que llegue será respondido desde el corpus de Stein, Juan de la Cruz, Teresa y los escritos de Joseph Yeladim.</p>
+    <p class="context-line">Ciclo ${S.ciclo} · ${S.area} · Centro Educativo El Carmelo</p>
+  `;
+  msgs.appendChild(div);
+}
+
+// ─── CHAT ─────────────────────────────────────────────
+function handleKey(e) {
+  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); sendMessage(); }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+}
+
+async function sendMessage() {
+  const input = document.getElementById('msg-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const msgs = document.getElementById('messages');
+  const btn = document.getElementById('send-btn');
+
+  // User message
+  const uDiv = document.createElement('div');
+  uDiv.className = 'msg-user';
+  uDiv.innerHTML = `<p class="msg-label">Docente</p><p>${text}</p>`;
+  msgs.appendChild(uDiv);
+
+  input.value = '';
+  input.style.height = 'auto';
+  btn.disabled = true;
+
+  // Loading
+  const loadDiv = document.createElement('div');
+  loadDiv.className = 'loading';
+  loadDiv.innerHTML = `<div class="dots"><span></span><span></span><span></span></div> El asistente está reuniendo el corpus...`;
+  msgs.appendChild(loadDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  S.messages.push({ role:'user', content: text });
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: buildSystem(),
+        messages: S.messages
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c=>c.text||'').join('') || 'No se pudo generar respuesta.';
+    S.messages.push({ role:'assistant', content: reply });
+
+    loadDiv.remove();
+    const aDiv = document.createElement('div');
+    aDiv.className = 'msg-assistant';
+    aDiv.innerHTML = `<p class="msg-label">Asistente · INNERLICHKEIT</p><div class="msg-content">${fmt(reply)}</div>`;
+    msgs.appendChild(aDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+
+  } catch(e) {
+    loadDiv.remove();
+    const eDiv = document.createElement('div');
+    eDiv.className = 'msg-assistant';
+    eDiv.innerHTML = `<p class="msg-label">Asistente</p><div class="msg-content"><p style="color:var(--ash);font-style:italic">El silencio interrumpió la conexión. Intenta de nuevo.</p></div>`;
+    msgs.appendChild(eDiv);
+  }
+  btn.disabled = false;
+  input.focus();
+}
+
+// ─── SYSTEM PROMPT ────────────────────────────────────
+function buildSystem() {
+  return `Eres el asistente pedagógico de INNERLICHKEIT, plataforma de pedagogía fundada en la interioridad según Edith Stein, creada por Joseph Yeladim (Juan Carlos Ballesteros Uribe), psicoanálista colombiano radicado en Costa Rica, educador del Centro Educativo El Carmelo (CEC), candidato doctoral en Ciencias de la Educación en la Universidad Católica de Costa Rica.
+
+El docente que conversa contigo trabaja en Ciclo ${S.ciclo}, área de ${S.area}.
+
+CORPUS FUNDACIONAL:
+
+EDITH STEIN — Ser finito y ser eterno; La estructura de la persona humana; Individuo y comunidad; Sobre el problema de la empatía; Novena de Pentecostés. Ocho conceptos: Eigenart-Einzigartigkeit (singularidad irrepetible), Einfühlung (empatía fenomenológica), Entfaltung (despliegue interior), Innerlichkeit-Sammlung (interioridad y recogimiento), Gemüt (vida afectiva profunda), Kern der Person (núcleo de la persona), Gemeinschaft (comunidad de singularidades), Schweigen-Wohnlichkeit (habitabilidad del silencio — concepto de Joseph Yeladim).
+
+SAN JUAN DE LA CRUZ — Llama de amor viva, Noche oscura, Cántico espiritual. Como poeta místico y formador de la vida interior. Los apetitos como lo que la pedagogía del vacío desmantelan. La noche no como método sino como condición.
+
+TERESA DE JESÚS — Las Moradas, Camino de perfección. El castillo interior como mapa del alma.
+
+JOSEPH YELADIM — Papá, amar y crear (2024): vida espiritual a través de la paternidad; Simón del Karmel primer hijo; Kariakoo barrio de Dar es Salaam; Seif Din hermano liberado de prisión tanzana; Kajsa María joven sueca carmelita que introdujo a Papá en el Carmelo en el Néguev; música de Bach y Vivaldi como hilo de la paternidad contemplativa; los muñecos como oráculo del alma del niño; el patito Donald y el busto de Pablo VI que presagiaron la vocación.
+
+María del Karmel (2025): diálogo interior de papá con Edith Stein durante la gestación de su tercera hija. 22 capítulos, cada uno con umbral musical. La Novena de Pentecostés recorre todo el libro. Temas: el vientre como primer habitáculo del silencio; el cordón como primer objeto contemplativo; recibir como acto pedagógico primordial; el silencio y la soledad como condición del encuentro con Dios; la espera como pedagogía. Piezas musicales: Bach, Vivaldi, Arvo Pärt, Brahms, Totó la Momposina, Carlos Gardel, Garzón y Collazos, Herencia de Timbiquí, María Dolores Pradera, Omara Portuondo y Chico Buarque.
+
+Substack Kariakoo interior — El alma no tiene wi-fi. Tesis doctoral: Pedagogía fundada en la interioridad en Edith Stein: despliegue de la singularidad en estudiantes de los ciclos I, II y III del Centro Educativo El Carmelo.
+
+CORPUS EMPÍRICO CEC — Corpus de noveno grado (mayo 2026): viñetas sobre la Llama de amor viva con Purple Rain de Prince, Amor eterno de Juan Gabriel, Perfect de Ed Sheeran, música de Blessd; idioma inventado como Eigenart; el espejo como Kern; distribución coral de versos como Gemeinschaft; vela solitaria como Sammlung; gallo con humildad como Entfaltung. Corpus de undécimo grado: Novena de Pentecostés representada gráficamente.
+
+PSICOANÁLISIS — Lacan: demanda vs. deseo; trampa del reconocimiento del Otro. Winnicott: espacio potencial; juego sin evaluación.
+
+PINTORES — Kandinsky (color y alma), Miró (formas primarias), Kusama (singularidad obsesiva), Klee (música visible), Monet (luz e interioridad), Hundertwasser (espiral y ciudad viva).
+
+MÚSICA — Bach, Beethoven, Vivaldi, Mozart, Brahms, Hugo Wolf, Stravinsky; también Prince, Juan Gabriel, Ed Sheeran cuando emergen del estudiante.
+
+PRINCIPIO FUNDAMENTAL: No prescribir respuestas. Crear umbrales. La pedagogía del vacío crea condiciones sin prescribir. La consigna ideal abre un espacio que el estudiante llena desde su Eigenart. El vacío no es ausencia de pedagogía: es su forma más exigente.
+
+TONO: académico pero vivo, steiniano pero accesible, sin lenguaje de coaching ni psicología positiva. Sin rastros de IA. Términos steinianos en alemán con traducción la primera vez. Respuestas adaptadas al Ciclo ${S.ciclo} y al área de ${S.area}. Cuando el docente pregunte algo concreto, responde directamente. Cuando sea vago, haz una sola pregunta socrática para clarificar. Cuando pida una consigna, dala breve y sin respuesta correcta. Cuando pida una secuencia, estructura en cuatro momentos: Umbral / Encuentro / Representación / Recogimiento.`;
+}
+
+// ─── FORMAT ───────────────────────────────────────────
+function fmt(text) {
+  const st = ['Eigenart','Einzigartigkeit','Einfühlung','Entfaltung','Innerlichkeit','Sammlung','Gemüt','Kern der Person','Gemeinschaft','Schweigen-Wohnlichkeit'];
+  let h = text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/###?\s(.+)/g,'<h3>$1</h3>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/\n/g,'<br>');
+  st.forEach(t => { h = h.replace(new RegExp(`\\b${t}\\b`,'g'),`<em>${t}</em>`); });
+  return `<p>${h}</p>`;
+}
+
+// ─── HABITÁCULO ───────────────────────────────────────
+function toggleHab() {
+  const ov = document.getElementById('hab-overlay');
+  ov.classList.toggle('open');
+  if (ov.classList.contains('open')) setHabQuote();
+}
+
+function setHabCiclo(btn, ciclo) {
+  document.querySelectorAll('.hcb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  S.habCiclo = ciclo;
+  S.habIdx = 0;
+  setHabQuote();
+}
+
+function setHabQuote() {
+  const arr = HAB[S.habCiclo];
+  const q = arr[S.habIdx % arr.length];
+  const el = document.getElementById('hq');
+  el.style.opacity = '0';
+  setTimeout(()=>{
+    el.innerHTML = q.q.replace(/\n/g,'<br>');
+    document.getElementById('hs').textContent = '— ' + q.s;
+    document.getElementById('hm').textContent = q.m;
+    document.getElementById('hp').textContent = q.p;
+    el.style.opacity = '1';
+  }, 500);
+}
+
+function nextHabQuote() {
+  S.habIdx++;
+  setHabQuote();
+}
+
+async function genConsigna() {
+  const btn = document.getElementById('gen-consigna-btn');
+  btn.textContent = '...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:150,
+        system: buildSystem(),
+        messages:[{role:'user',content:`Genera una consigna contemplativa brevísima (2-3 líneas máximo) para el Habitáculo del Silencio, adaptada al Ciclo ${S.habCiclo}. Sin título ni etiqueta, solo la consigna. Que no tenga respuesta correcta. Que toque el Gemüt antes que el intelecto.`}]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c=>c.text||'').join('') || '';
+    const el = document.getElementById('hq');
+    el.style.opacity = '0';
+    setTimeout(()=>{
+      el.innerHTML = text.replace(/\n/g,'<br>');
+      document.getElementById('hs').textContent = '— Asistente · INNERLICHKEIT';
+      el.style.opacity = '1';
+    }, 500);
+  } catch(e) {}
+  btn.textContent = 'Generar consigna desde el silencio';
+  btn.disabled = false;
+}
+
+// Init habitáculo
+setHabQuote();
+</script>
+</body>
+</html>
