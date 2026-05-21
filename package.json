@@ -1,11 +1,7 @@
 {
-  "name": "innerlichkeit",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "echo 'Building INNERLICHKEIT...'",
-    "dev": "vercel dev"
-  },
-  "engines": {
-    "node": "24.x"
-  }
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/chat", "destination": "/api/chat" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
